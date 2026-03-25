@@ -1,250 +1,42 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-TW">
 <head>
-<meta charset="UTF-8">
-<title>阿修聊天室</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的 GAS 應用程式</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden; /* 防止出現雙重滾動條 */
+        }
 
-<style>
+        .container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
 
-body {
-  font-family: "Microsoft JhengHei";
-  margin: 0;
-  background: #f0f2f5;
-}
-
-#login-box {
-  width: 320px;
-  margin: 80px auto;
-  padding: 30px;
-  background: white;
-  border-radius: 10px;
-  text-align: center;
-}
-
-#chat-container {
-  display: none;
-  height: 100vh;
-  flex-direction: column;
-}
-
-#chat-history {
-  height: 70vh;
-  overflow-y: auto;
-  padding: 10px;
-  background: #e5ddd5;
-}
-
-.msg {
-  background: white;
-  margin-bottom: 10px;
-  padding: 10px;
-  border-radius: 10px;
-}
-
-#input-area {
-  display: flex;
-  padding: 10px;
-  background: #f0f0f0;
-}
-
-#message-input {
-  flex-grow: 1;
-  padding: 10px;
-  font-size: 16px;
-}
-
-button {
-  padding: 10px 15px;
-  margin-left: 5px;
-}
-
-</style>
+        /* 關鍵：透過負的 margin 或 top 來遮擋橫幅 */
+        iframe {
+            position: absolute;
+            top: -20px; /* 向上推移約 20~25px，視橫幅高度而定 */
+            left: 0;
+            width: 100%;
+            height: calc(100% + 20px); /* 補回被推移的高度 */
+            border: none;
+        }
+    </style>
 </head>
-
 <body>
 
-<div id="login-box">
-
-<h2>阿修聊天室</h2>
-
-<input id="user" placeholder="帳號">
-<br><br>
-
-<input id="pass" type="password" placeholder="密碼">
-<br><br>
-
-<button onclick="doLogin()">
-進入聊天室
-</button>
-
-<p id="login-msg" style="color:red"></p>
-
-</div>
-
-<div id="chat-container">
-
-<div id="chat-history"></div>
-
-<div id="input-area">
-
-<input id="message-input" placeholder="輸入訊息">
-
-<button onclick="sendMsg()">
-送出
-</button>
-
-</div>
-
-</div>
-
-<script>
-
-const API_URL =
-"https://script.google.com/macros/s/AKfycbzlyXzoFo1hysbN7FJcJdmUqHCKJlrNqN1O9Iy0RBmwZJ61J-wYAVJpPYhseESZq-dl/exec";
-
-let currentUser = "";
-
-function api(action, data = {}) {
-
-  return fetch(API_URL, {
-
-    method: "POST",
-
-    headers: {
-      "Content-Type": "application/json"
-    },
-
-    body: JSON.stringify({
-      action,
-      ...data
-    })
-
-  })
-  .then(res => res.json());
-
-}
-
-function doLogin() {
-
-  const u =
-    document.getElementById("user").value;
-
-  const p =
-    document.getElementById("pass").value;
-
-  api("login", {
-    username: u,
-    password: p
-  })
-  .then(res => {
-
-    if (res.success) {
-
-      currentUser =
-        res.username;
-
-      document.getElementById(
-        "login-box"
-      ).style.display =
-        "none";
-
-      document.getElementById(
-        "chat-container"
-      ).style.display =
-        "flex";
-
-      loadHistory();
-
-      setInterval(
-        loadHistory,
-        4000
-      );
-
-    }
-    else {
-
-      document.getElementById(
-        "login-msg"
-      ).innerText =
-        "帳號或密碼錯誤";
-
-    }
-
-  });
-
-}
-
-function loadHistory() {
-
-  api("getHistory")
-  .then(renderChat);
-
-}
-
-function renderChat(data) {
-
-  const div =
-    document.getElementById(
-      "chat-history"
-    );
-
-  div.innerHTML = "";
-
-  data.forEach(row => {
-
-    const msgDiv =
-      document.createElement("div");
-
-    msgDiv.className =
-      "msg";
-
-    msgDiv.innerHTML =
-      "<b>" + row[0] + "</b>: "
-      + row[1]
-      + " <small>"
-      + row[2]
-      + "</small>";
-
-    div.appendChild(msgDiv);
-
-  });
-
-  div.scrollTop =
-    div.scrollHeight;
-
-}
-
-function sendMsg() {
-
-  const input =
-    document.getElementById(
-      "message-input"
-    );
-
-  const msg =
-    input.value;
-
-  if (!msg.trim())
-    return;
-
-  input.value =
-    "";
-
-  api("sendMessage", {
-
-    username:
-      currentUser,
-
-    message:
-      msg
-
-  })
-  .then(renderChat);
-
-}
-
-</script>
+    <div class="container">
+        <iframe src="https://script.google.com/macros/s/AKfycbyXRfgy4rQn1I8QLqUW9yDE9scdt-T_O13fpMNT5S-W/exec"></iframe>
+    </div>
 
 </body>
 </html>
